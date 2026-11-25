@@ -225,47 +225,20 @@
   }
 
   // --- ЗАГРУЗКА ДАННЫХ ---
-  // При запуске через http(s) читаем живые python/cards.json и шаблон,
-  // при открытии index.html двойным щелчком (file://) берём встроенные копии.
+  // Все данные встроены в js/data.js: набор карт и шаблон в base64.
+  // Сетевые запросы не нужны и не делаются — работает и по file://.
 
-  async function loadDeckRaw() {
-    try {
-      var response = await fetch("python/cards.json", { cache: "no-store" });
-      if (response.ok) {
-        var raw = await response.json();
-        if (raw && !Array.isArray(raw)) {
-          raw = raw.cards;
-        }
-        if (Array.isArray(raw) && raw.length) {
-          return raw;
-        }
-      }
-    } catch (err) {
-      /* file:// — fetch запрещён, используем встроенный набор */
-    }
+  function loadDeckRaw() {
     return Array.isArray(window.CARD_DECK_RAW) ? window.CARD_DECK_RAW : [];
   }
 
-  async function loadTemplateText() {
-    try {
-      var url = "python/" + encodeURIComponent(window.TemplateTool.TEMPLATE_FILE);
-      var response = await fetch(url, { cache: "no-store" });
-      if (response.ok) {
-        var buffer = await response.arrayBuffer();
-        var text = window.TemplateTool.decodeCp1251(new Uint8Array(buffer));
-        if (text && text.length > 50) {
-          return text;
-        }
-      }
-    } catch (err) {
-      /* file:// — берём встроенный шаблон */
-    }
+  function loadTemplateText() {
     if (window.TEMPLATE_B64) {
       return window.TemplateTool.decodeCp1251(
         window.TemplateTool.base64ToBytes(window.TEMPLATE_B64)
       );
     }
-    throw new Error("Не найден шаблон " + window.TemplateTool.TEMPLATE_FILE);
+    throw new Error("Не найден шаблон в js/data.js");
   }
 
   // --- ПРИЛОЖЕНИЕ ---
@@ -2740,7 +2713,7 @@
       }
     });
     if (!deck.length) {
-      console.error("Набор карт пуст: проверьте python/cards.json или js/data.js");
+      console.error("Набор карт пуст: проверьте js/data.js");
     }
 
     window.draftApp = new DraftApp(deck, templateText);
