@@ -1,4 +1,4 @@
-/* Jebus Cross SD — веб-версия. Палитра и пропорции перенесены из main.py. */
+/* Стили интерфейса Jebus Cross SD. */
 
 :root {
   --bg: #1a1009;
@@ -38,12 +38,11 @@ body {
   overflow: hidden;
 }
 
-/* --- ПОЛЕ --- */
-
+/* ПОЛЕ */
 .board {
   position: relative;
   overflow: hidden;
-  background: var(--bg) url("../img/DiBoxBck.bmp") repeat;
+  background: var(--bg) url("../img/DiBoxBck.jpg") repeat;
   touch-action: none;
   user-select: none;
   -webkit-user-select: none;
@@ -75,8 +74,7 @@ body {
   font-size: 14px;
 }
 
-/* --- ЗОНЫ --- */
-
+/* ЗОНЫ */
 .zone {
   position: absolute;
   border-radius: 14px;
@@ -138,8 +136,7 @@ body {
   z-index: 3;
 }
 
-/* --- ЗОЛОТО --- */
-
+/* ЗОЛОТО */
 .gold-panel {
   position: absolute;
   top: 2px;
@@ -207,8 +204,7 @@ body {
   cursor: default;
 }
 
-/* --- БАННЕР ГОРОДА --- */
-
+/* БАННЕР ГОРОДА */
 .zone-hint {
   position: absolute;
   left: 0;
@@ -269,8 +265,7 @@ body {
   background: transparent;
 }
 
-/* --- КАРТЫ --- */
-
+/* КАРТЫ */
 .card-face {
   position: absolute;
   z-index: 2;
@@ -360,8 +355,7 @@ body {
   white-space: pre-wrap;
 }
 
-/* --- КНОПКА ВЫБОРА СТОРОНЫ --- */
-
+/* КНОПКА ВЫБОРА СТОРОНЫ */
 .pick-btn {
   position: absolute;
   z-index: 5;
@@ -391,8 +385,7 @@ body {
   background: #f0d38a;
 }
 
-/* --- БОКОВАЯ ПАНЕЛЬ --- */
-
+/* БОКОВАЯ ПАНЕЛЬ */
 .sidebar {
   display: flex;
   flex-direction: column;
@@ -605,8 +598,7 @@ input:focus-visible {
   outline-offset: 1px;
 }
 
-/* --- ПЕРЕТАСКИВАНИЕ --- */
-
+/* ПЕРЕТАСКИВАНИЕ */
 .ghost-layer {
   position: fixed;
   inset: 0;
@@ -620,8 +612,7 @@ input:focus-visible {
   box-shadow: 0 14px 30px rgba(0, 0, 0, 0.65);
 }
 
-/* --- УВЕЛИЧЕНИЕ КАРТЫ --- */
-
+/* УВЕЛИЧЕНИЕ КАРТЫ */
 .zoom-layer {
   position: fixed;
   inset: 0;
@@ -639,8 +630,7 @@ input:focus-visible {
   box-shadow: 0 22px 60px rgba(0, 0, 0, 0.75);
 }
 
-/* --- ОКНО НАСТРОЕК --- */
-
+/* ОКНО НАСТРОЕК */
 .modal {
   position: fixed;
   inset: 0;
@@ -722,8 +712,7 @@ input:focus-visible {
   font-size: 14px;
 }
 
-/* --- УЗКИЕ ЭКРАНЫ --- */
-
+/* УЗКИЕ ЭКРАНЫ */
 @media (max-width: 900px) {
   html,
   body {
