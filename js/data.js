@@ -695,7 +695,7 @@ window.CARD_DECK_RAW = [
   },
   {
     "mutex_group": 16,
-    "name": "Одна Утопя Драконов",
+    "name": "Одна Утопия Драконов",
     "image": "card_00ud1.jpg",
     "type": "individual",
     "short": "Закрепляет в зоне ровно 1 Утопию Драконов.",
