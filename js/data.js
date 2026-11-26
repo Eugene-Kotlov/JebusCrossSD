@@ -94,7 +94,7 @@ window.CARD_DECK_RAW = [
       {
         "mode": "append",
         "path": "Zone\\Options\\Objects",
-        "value": "+16 2 d 10000 d 1 d",
+        "value": "+16 2 d 99999 d 1 d",
         "target": "$zone"
       }
     ]
@@ -110,7 +110,7 @@ window.CARD_DECK_RAW = [
       {
         "mode": "append",
         "path": "Zone\\Options\\Objects",
-        "value": "+16 2 d 10000 d 2 d",
+        "value": "+16 2 d 99999 d 2 d",
         "target": "$zone"
       }
     ]
@@ -126,7 +126,7 @@ window.CARD_DECK_RAW = [
       {
         "mode": "append",
         "path": "Zone\\Options\\Objects",
-        "value": "+16 2 d 10000 d 3 d",
+        "value": "+16 2 d 99999 d 3 d",
         "target": "$zone"
       }
     ]
@@ -142,7 +142,7 @@ window.CARD_DECK_RAW = [
       {
         "mode": "append",
         "path": "Zone\\Options\\Objects",
-        "value": "+16 2 d 10000 d 4 d",
+        "value": "+16 2 d 99999 d 4 d",
         "target": "$zone"
       }
     ]
@@ -158,7 +158,7 @@ window.CARD_DECK_RAW = [
       {
         "mode": "append",
         "path": "Zone\\Options\\Objects",
-        "value": "+16 2 d 10000 d 5 d",
+        "value": "+16 2 d 99999 d 5 d",
         "target": "$zone"
       }
     ]
@@ -174,7 +174,7 @@ window.CARD_DECK_RAW = [
       {
         "mode": "append",
         "path": "Zone\\Options\\Objects",
-        "value": "+16 2 d 10000 d 6 d",
+        "value": "+16 2 d 99999 d 6 d",
         "target": "$zone"
       }
     ]
@@ -190,7 +190,7 @@ window.CARD_DECK_RAW = [
       {
         "mode": "append",
         "path": "Zone\\Options\\Objects",
-        "value": "+16 31 d 10000 d 1 d",
+        "value": "+16 31 d 99999 d 1 d",
         "target": "$zone"
       }
     ]
@@ -206,7 +206,7 @@ window.CARD_DECK_RAW = [
       {
         "mode": "append",
         "path": "Zone\\Options\\Objects",
-        "value": "+16 31 d 10000 d 2 d",
+        "value": "+16 31 d 99999 d 2 d",
         "target": "$zone"
       }
     ]
@@ -222,7 +222,7 @@ window.CARD_DECK_RAW = [
       {
         "mode": "append",
         "path": "Zone\\Options\\Objects",
-        "value": "+16 31 d 10000 d 3 d",
+        "value": "+16 31 d 99999 d 3 d",
         "target": "$zone"
       }
     ]
@@ -238,7 +238,7 @@ window.CARD_DECK_RAW = [
       {
         "mode": "append",
         "path": "Zone\\Options\\Objects",
-        "value": "+16 31 d 10000 d 4 d",
+        "value": "+16 31 d 99999 d 4 d",
         "target": "$zone"
       }
     ]
@@ -254,7 +254,7 @@ window.CARD_DECK_RAW = [
       {
         "mode": "append",
         "path": "Zone\\Options\\Objects",
-        "value": "+16 31 d 10000 d 5 d",
+        "value": "+16 31 d 99999 d 5 d",
         "target": "$zone"
       }
     ]
@@ -270,7 +270,7 @@ window.CARD_DECK_RAW = [
       {
         "mode": "append",
         "path": "Zone\\Options\\Objects",
-        "value": "+16 31 d 10000 d 6 d",
+        "value": "+16 31 d 99999 d 6 d",
         "target": "$zone"
       }
     ]
@@ -286,7 +286,7 @@ window.CARD_DECK_RAW = [
       {
         "mode": "append",
         "path": "Zone\\Options\\Objects",
-        "value": "+16 6 d 10000 d 1 d",
+        "value": "+16 6 d 99999 d 1 d",
         "target": "$zone"
       }
     ]
@@ -302,7 +302,7 @@ window.CARD_DECK_RAW = [
       {
         "mode": "append",
         "path": "Zone\\Options\\Objects",
-        "value": "+16 6 d 10000 d 2 d",
+        "value": "+16 6 d 99999 d 2 d",
         "target": "$zone"
       }
     ]
@@ -318,7 +318,7 @@ window.CARD_DECK_RAW = [
       {
         "mode": "append",
         "path": "Zone\\Options\\Objects",
-        "value": "+16 6 d 10000 d 3 d",
+        "value": "+16 6 d 99999 d 3 d",
         "target": "$zone"
       }
     ]
@@ -334,7 +334,7 @@ window.CARD_DECK_RAW = [
       {
         "mode": "append",
         "path": "Zone\\Options\\Objects",
-        "value": "+16 6 d 10000 d 4 d",
+        "value": "+16 6 d 99999 d 4 d",
         "target": "$zone"
       }
     ]
@@ -350,7 +350,7 @@ window.CARD_DECK_RAW = [
       {
         "mode": "append",
         "path": "Zone\\Options\\Objects",
-        "value": "+16 6 d 10000 d 5 d",
+        "value": "+16 6 d 99999 d 5 d",
         "target": "$zone"
       }
     ]
@@ -366,7 +366,7 @@ window.CARD_DECK_RAW = [
       {
         "mode": "append",
         "path": "Zone\\Options\\Objects",
-        "value": "+16 6 d 10000 d 6 d",
+        "value": "+16 6 d 99999 d 6 d",
         "target": "$zone"
       }
     ]
@@ -647,7 +647,7 @@ window.CARD_DECK_RAW = [
       {
         "mode": "append",
         "path": "Zone\\Options\\Objects",
-        "value": "+108 0 d 10000 d 6 d",
+        "value": "+108 0 d 99999 d 6 d",
         "target": "$zone"
       }
     ]
@@ -704,7 +704,7 @@ window.CARD_DECK_RAW = [
       {
         "mode": "append",
         "path": "Zone\\Options\\Objects",
-        "value": "+25 0 d 10000 d 1 d",
+        "value": "+25 0 d 99999 d 1 d",
         "target": "$zone"
       }
     ]
@@ -720,7 +720,7 @@ window.CARD_DECK_RAW = [
       {
         "mode": "append",
         "path": "Zone\\Options\\Objects",
-        "value": "+25 0 d 10000 d 2 d",
+        "value": "+25 0 d 99999 d 2 d",
         "target": "$zone"
       }
     ]
@@ -736,7 +736,7 @@ window.CARD_DECK_RAW = [
       {
         "mode": "append",
         "path": "Zone\\Options\\Objects",
-        "value": "+25 0 d 10000 d 3 d",
+        "value": "+25 0 d 99999 d 3 d",
         "target": "$zone"
       }
     ]
