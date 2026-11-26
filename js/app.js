@@ -1,18 +1,11 @@
-/* Драфт Соломона — веб-версия python/main.py.
- *
- * Поле: две цветные зоны (красная слева, синяя справа) и серая зона общих
- * карт между ними. Настройки нового расклада открываются кнопкой
- * «Новый расклад». Управление: ЛКМ — выбрать/переложить карту, перетаскивание
- * мышью, ПКМ — увеличенный просмотр карты до повторного ПКМ/левого клика/Esc.
- *
- * Сеть: MQTT через WebSocket к публичному брокеру. Топик и формат сообщений
- * совпадают с Python-версией: jebus-draft/<комната>/chat, JSON с kind
- * "chat" / "sync" / "sync_req". Синхронизация поля — пара (rev, origin).
+/* Jebus Cross SD — драфт карт для Heroes III.
+ * Две зоны (красная и синяя) и общая серая зона. ЛКМ — выбор и перетаскивание,
+ * ПКМ — увеличенный просмотр карты. Сеть — MQTT (jebus-draft/<комната>/chat).
  */
 (function () {
   "use strict";
 
-  // --- ОСНОВНЫЕ НАСТРОЙКИ ---
+  // ОСНОВНЫЕ НАСТРОЙКИ
   var HOTA_CASTLES = [
     "Замок (Castle)",
     "Оплот (Rampart)",
@@ -58,8 +51,7 @@
   var INDIVIDUAL = "individual";
   var SHARED = "shared";
 
-  // --- ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ---
-
+  // ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
   function clamp(value, low, high) {
     return Math.max(low, Math.min(high, value));
   }
@@ -142,19 +134,8 @@
     return slug.slice(0, 32) || "general";
   }
 
-  function imageFile(name) {
-    var manifest = window.IMG_MANIFEST || [];
-    var lower = String(name || "").toLowerCase();
-    for (var i = 0; i < manifest.length; i++) {
-      if (manifest[i].toLowerCase() === lower) {
-        return manifest[i];
-      }
-    }
-    return String(name || "");
-  }
-
   function imageSrc(name) {
-    return "img/" + encodeURIComponent(imageFile(name));
+    return "img/" + encodeURIComponent(String(name || ""));
   }
 
   function el(tag, className) {
@@ -180,8 +161,7 @@
     return node ? node.closest(selector) : null;
   }
 
-  // --- КАРТЫ ---
-
+  // КАРТЫ
   function cardMutexGroup(raw) {
     var value = parseInt(raw && raw.mutex_group, 10);
     return Number.isFinite(value) ? Math.max(0, value) : 0;
@@ -224,7 +204,7 @@
     throw new Error("bad card");
   }
 
-  // --- ЗАГРУЗКА ДАННЫХ ---
+  // ЗАГРУЗКА ДАННЫХ
   // Все данные встроены в js/data.js: набор карт и шаблон в base64.
   // Сетевые запросы не нужны и не делаются — работает и по file://.
 
@@ -241,8 +221,7 @@
     throw new Error("Не найден шаблон в js/data.js");
   }
 
-  // --- ПРИЛОЖЕНИЕ ---
-
+  // ПРИЛОЖЕНИЕ
   class DraftApp {
     constructor(deck, templateText) {
       this.deck = deck;
@@ -280,7 +259,6 @@
       this.press = null;
       this.hoverZone = null;
       this.zoomActive = false;
-      this.zoomCardIndex = null;
       this.touchZoomTimer = null;
       this.cardSize = [0, 0];
       this.plaqueWh = [300, 140];
@@ -352,8 +330,7 @@
       });
     }
 
-    // --- ЗОЛОТО ---
-
+    // ЗОЛОТО
     createGoldPanel(side) {
       var self = this;
       var panel = el("div", "gold-panel");
@@ -508,8 +485,7 @@
       this.updateMoneyMarks();
     }
 
-    // --- СОБЫТИЯ И РАЗМЕР ---
-
+    // СОБЫТИЯ И РАЗМЕР
     bindEvents() {
       var self = this;
 
@@ -652,8 +628,7 @@
       });
     }
 
-    // --- ГЕОМЕТРИЯ ПОЛЯ ---
-
+    // ГЕОМЕТРИЯ ПОЛЯ
     plaqueBox(zoneW, zoneH) {
       var width = zoneW - 28;
       var height = width / CASTLE_ART_ASPECT;
@@ -756,8 +731,7 @@
       };
     }
 
-    // --- РИСОВАНИЕ ---
-
+    // РИСОВАНИЕ
     redraw() {
       this.hideZoom();
       this.zoomActive = false;
@@ -1151,8 +1125,7 @@
       span.style.fontSize = fitted.size + "px";
     }
 
-    // --- ПОИСК ЦЕЛИ И ПЕРЕТАСКИВАНИЕ ---
-
+    // ПОИСК ЦЕЛИ И ПЕРЕТАСКИВАНИЕ
     findTarget(from) {
       var shared = closestFrom(from, "[data-shared-index]");
       if (shared) {
@@ -1449,8 +1422,7 @@
       this.refresh();
     }
 
-    // --- КЛИКИ ---
-
+    // КЛИКИ
     clickCastle(side) {
       if (!this.canMoveCards()) {
         return;
@@ -1519,8 +1491,7 @@
       this.refresh();
     }
 
-    // --- УВЕЛИЧЕНИЕ КАРТЫ ---
-
+    // УВЕЛИЧЕНИЕ КАРТЫ
     cardIndexFromTarget(target) {
       if (!target) {
         return null;
@@ -1541,17 +1512,6 @@
         this.showZoom(index, event.clientX, event.clientY);
       } else {
         this.hideZoom();
-      }
-    }
-
-    onZoomMove(event) {
-      var info = this.cardAtClient(event.clientX, event.clientY);
-      if (!info) {
-        if (!this.zoomLayer.hidden) {
-          this.hideZoom();
-        }
-      } else if (info.index !== this.zoomCardIndex) {
-        this.showZoom(info.index, event.clientX, event.clientY);
       }
     }
 
@@ -1608,7 +1568,6 @@
         index: index, ghost: true, highlight: true, zoom: true,
         textKey: "long"
       });
-      this.zoomCardIndex = index;
     }
 
     hideZoom() {
@@ -1618,11 +1577,9 @@
       }
       this.zoomLayer.hidden = true;
       this.zoomLayer.innerHTML = "";
-      this.zoomCardIndex = null;
     }
 
-    // --- РОЛИ И ХОД ---
-
+    // РОЛИ И ХОД
     isSplitter() {
       return this.phase !== "idle" && this.splitterId === this.netId;
     }
@@ -1669,8 +1626,7 @@
       return this.shortName(name);
     }
 
-    // --- ХОД ДРАФТА ---
-
+    // ХОД ДРАФТА
     resetBoard() {
       this.phase = "idle";
       this.picked = null;
@@ -1935,8 +1891,7 @@
       this.refresh();
     }
 
-    // --- ПАНЕЛИ И ТЕКСТЫ ---
-
+    // ПАНЕЛИ И ТЕКСТЫ
     updateInfo() {
       var text;
       if (this.phase === "idle") {
@@ -2069,8 +2024,7 @@
       }
     }
 
-    // --- ШАБЛОН .h3t ---
-
+    // ШАБЛОН .h3t
     saveDraftTemplate(auto) {
       var key = this.sessionId + ":" + this.roundNo;
       if (this.templateSavedKey === key) {
@@ -2126,8 +2080,7 @@
       link.remove();
     }
 
-    // --- КОНСОЛЬ ---
-
+    // КОНСОЛЬ
     addConsole(text, className) {
       var line = el("div", "console-line" + (className ? " " + className : ""));
       line.textContent = text;
@@ -2146,8 +2099,7 @@
       this.addConsole(text, tag || "chat");
     }
 
-    // --- СЕТЬ: MQTT ---
-
+    // СЕТЬ: MQTT
     setNetStatus(text, color) {
       this.netStatusEl.textContent = text;
       this.netStatusEl.style.color = color || "#cdb894";
@@ -2413,8 +2365,7 @@
       return sent ? side : null;
     }
 
-    // --- СИНХРОНИЗАЦИЯ РАСКЛАДКИ ---
-
+    // СИНХРОНИЗАЦИЯ РАСКЛАДКИ
     boardState() {
       var setups = {};
       for (var side of ["left", "right"]) {
@@ -2647,7 +2598,6 @@
           var raw = setups[side];
           var castle = raw && typeof raw === "object" ? raw.castle : null;
           this.setups[side] = {
-            // Красная зона всегда слева, синяя справа.
             color: side === "left" ? "Красный" : "Синий",
             castle: String(castle || this.setups[side].castle).slice(0, 64),
             money: this.money[side]
@@ -2688,8 +2638,7 @@
     return aOrigin < bOrigin ? -1 : 1;
   }
 
-  // --- ЗАПУСК ---
-
+  // ЗАПУСК
   async function init() {
     var deckRaw = [];
     var templateText = "";

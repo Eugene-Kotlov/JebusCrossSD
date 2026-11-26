@@ -1,19 +1,10 @@
-/* Правка шаблона .h3t в браузере.
- *
- * Порт одноимённых функций из python/main.py: шаблон — таблица с
- * разделителями-табуляциями в кодировке windows-1251. Первые три строки —
- * заголовки (секция, подсекция, поле), дальше идут записи.
- *
- * Карта хранит в поле template список инструкций правки:
- *   {mode: "append"/"replace", path: "Pack\\Options\\Heroes",
- *    value: "-6 -8 ...", target: "2"}.
- * Путь к ячейке — «Секция\\Подсекция\\Поле»; подсекция может отсутствовать.
- * target — id зоны ("2"/"3"/"4"/"5") или "$zone"/"$opposite_zone".
+/* Разбор, правка и сборка шаблона .h3t: TSV в кодировке windows-1251.
+ * Первые три строки — заголовки секций, подсекций и полей.
+ * Правка карты: {mode, path, value, target}, где path — «Секция\\Поле».
  */
 (function (global) {
   "use strict";
 
-  var TEMPLATE_FILE = "Jebus Cross.h3t";
   var TEMPLATE_OUTPUT = "Jebus Cross SD.h3t";
   var APPEND = "append";
   var REPLACE = "replace";
@@ -23,8 +14,7 @@
   var OPP_ZONE = "$opposite_zone";
   var ZONE_TEMPLATE_IDS = { left: "2", right: "3" };
 
-  // --- КОДИРОВКА windows-1251 ---
-
+  // КОДИРОВКА windows-1251
   var cp1251Decoder = null;
   var cp1251Reverse = null;
 
@@ -78,8 +68,7 @@
     return bytes;
   }
 
-  // --- ПУТИ И НОРМАЛИЗАЦИЯ ---
-
+  // ПУТИ И НОРМАЛИЗАЦИЯ
   function templatePath(section, subsection, field) {
     return [section, subsection, field]
       .map(function (part) {
@@ -141,8 +130,7 @@
     return out;
   }
 
-  // --- ЧТЕНИЕ И ЗАПИСЬ ТАБЛИЦЫ ---
-
+  // ЧТЕНИЕ И ЗАПИСЬ ТАБЛИЦЫ
   function splitTsvLine(line) {
     var out = [];
     var current = "";
@@ -327,20 +315,10 @@
       if (TEMPLATE_MODES.indexOf(mode) === -1) {
         throw new Error("Неизвестная правка шаблона: " + mode);
       }
-      var path = String(instr.path || "").trim();
-      var section;
-      var subsection;
-      var field;
-      if (path) {
-        var parts = splitTemplatePath(path);
-        section = parts[0];
-        subsection = parts[1];
-        field = parts[2];
-      } else {
-        section = String(instr.section || "");
-        subsection = String(instr.subsection || "");
-        field = String(instr.field || "");
-      }
+      var parts = splitTemplatePath(instr.path);
+      var section = parts[0];
+      var subsection = parts[1];
+      var field = parts[2];
       var target = String(instr.target || "") || null;
       var value = String(instr.value === undefined || instr.value === null ? "" : instr.value);
       if (mode === APPEND) {
@@ -360,8 +338,7 @@
     return applied;
   }
 
-  // --- СБОРКА НОВОГО ШАБЛОНА ---
-
+  // СБОРКА НОВОГО ШАБЛОНА
   function templateStamp(date) {
     var when = date || new Date();
     function pad2(value) {
@@ -435,7 +412,6 @@
   }
 
   global.TemplateTool = {
-    TEMPLATE_FILE: TEMPLATE_FILE,
     TEMPLATE_OUTPUT: TEMPLATE_OUTPUT,
     APPEND: APPEND,
     REPLACE: REPLACE,
