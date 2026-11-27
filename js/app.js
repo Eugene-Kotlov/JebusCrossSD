@@ -30,6 +30,7 @@
   var TOTAL_GOLD = 20000;
   var CASTLE_ART_ASPECT = 800 / 374;
   var CASTLE_ART_HEIGHT = 0.28;
+  var ZONE_HEADER_TOP = 52;
 
   var MQTT_HOST = "broker.emqx.io";
   var MQTT_WS_URL = "wss://" + MQTT_HOST + ":8084/mqtt";
@@ -45,6 +46,7 @@
   var SHARED_GAP = 20;
   var PICK_SPACE = 62;
   var ZONE_RADIUS = 14;
+  var ZONE_PAD = 10;
   var DRAG_THRESHOLD = 6;
   var CONSOLE_LIMIT = 400;
 
@@ -630,7 +632,7 @@
 
     // ГЕОМЕТРИЯ ПОЛЯ
     plaqueBox(zoneW, zoneH) {
-      var width = zoneW - 28;
+      var width = zoneW - 2 * ZONE_PAD;
       var height = width / CASTLE_ART_ASPECT;
       var limit = zoneH * CASTLE_ART_HEIGHT;
       if (height > limit) {
@@ -657,20 +659,21 @@
       for (cw = 140; cw > 45; cw--) {
         ch = Math.floor(cw * 1.4);
         gap = Math.max(5, Math.floor(cw * 0.09));
-        var centerW = hasShared ? cw + 2 * SHARED_PAD : 0;
+        var centerW = hasShared ? cw + 2 * ZONE_PAD : 0;
         var gaps = hasShared ? 2 * zoneGap : zoneGap;
         var zoneW = (width - 2 * margin - gaps - centerW) / 2;
-        if (zoneW < cw * 2.6) {
+        if (zoneW - 2 * ZONE_PAD < cw * 2.6) {
           continue;
         }
         var plaque = this.plaqueBox(zoneW, zoneH);
-        var top = 40 + plaque.h + 10;
-        var avail = zoneH - top - 8 - PICK_SPACE;
-        var cols = Math.max(1, Math.floor((zoneW - 16 + gap) / (cw + gap)));
+        var top = ZONE_HEADER_TOP + plaque.h + ZONE_PAD;
+        var avail = zoneH - top - ZONE_PAD - PICK_SPACE;
+        var cols = Math.max(1, Math.floor((zoneW - 2 * ZONE_PAD + gap) / (cw + gap)));
         var rows = indN ? Math.ceil(indN / cols) : 0;
         var need = rows * ch + Math.max(0, rows - 1) * gap;
         var centerH = hasShared
-          ? SHARED_TITLE_H + sharedN * ch + Math.max(0, sharedN - 1) * gap + 2 * SHARED_PAD
+          ? SHARED_TITLE_H + 2 * ZONE_PAD + 2 + sharedN * ch +
+            Math.max(0, sharedN - 1) * gap
           : 0;
         if (need <= avail && centerH <= zoneH) {
           best = {
@@ -685,11 +688,12 @@
         cw = 46;
         ch = 64;
         gap = 5;
-        var centerW2 = hasShared ? cw + 2 * SHARED_PAD : 0;
+        var centerW2 = hasShared ? cw + 2 * ZONE_PAD : 0;
         var gaps2 = hasShared ? 2 * zoneGap : zoneGap;
         var zoneW2 = (width - 2 * margin - gaps2 - centerW2) / 2;
         var centerH2 = hasShared
-          ? SHARED_TITLE_H + sharedN * ch + Math.max(0, sharedN - 1) * gap + 2 * SHARED_PAD
+          ? SHARED_TITLE_H + 2 * ZONE_PAD + 2 + sharedN * ch +
+            Math.max(0, sharedN - 1) * gap
           : 0;
         best = {
           cw: cw, ch: ch, gap: gap, zoneW: zoneW2,
@@ -780,6 +784,10 @@
     drawZone(side, x, y, zoneW, zoneH, cw, ch, gap) {
       var setup = this.setups[side];
       var chosen = this.picked === side;
+      var border = chosen ? 3 : 2;
+      var innerW = zoneW - 2 * border;
+      var innerH = zoneH - 2 * border;
+      var pad = ZONE_PAD - border;
       var zone = el("div", "zone " + (side === "left" ? "zone-red" : "zone-blue") +
         (chosen ? " chosen" : ""));
       zone.dataset.zoneSide = side;
@@ -793,7 +801,8 @@
       zone.append(gold.panel);
       this.updateGoldPanel(side);
 
-      this.appendCastle(zone, side, zoneW / 2, 40 + this.plaqueWh[1] / 2);
+      this.appendCastle(zone, side, innerW / 2,
+        ZONE_HEADER_TOP + this.plaqueWh[1] / 2);
 
       var cards = this.zones[side];
       var picking = this.phase === "choosing";
@@ -803,17 +812,17 @@
         hint.textContent = (this.phase === "splitting" && this.indTotal)
           ? "перетащите карту сюда"
           : "без карт";
-        hint.style.top = Math.round(zoneH / 2 + 26) + "px";
+        hint.style.top = Math.round(innerH / 2 + 26) + "px";
         zone.append(hint);
       } else {
-        var cols = Math.max(1, Math.floor((zoneW - 16 + gap) / (cw + gap)));
+        var cols = Math.max(1, Math.floor((zoneW - 2 * ZONE_PAD + gap) / (cw + gap)));
         cols = Math.min(cols, cards.length);
         var rows = Math.ceil(cards.length / cols);
         var gridW = cols * cw + (cols - 1) * gap;
         var gridH = rows * ch + (rows - 1) * gap;
-        var gridX = Math.round((zoneW - gridW) / 2);
-        var top = 40 + this.plaqueWh[1] + 10;
-        var avail = zoneH - (picking ? PICK_SPACE : 8) - top;
+        var gridX = Math.round(pad + (zoneW - 2 * ZONE_PAD - gridW) / 2);
+        var top = ZONE_HEADER_TOP + this.plaqueWh[1] + ZONE_PAD;
+        var avail = innerH - (picking ? PICK_SPACE : pad) - top;
         var gridY = Math.round(top + Math.max(0, (avail - gridH) / 2));
 
         for (var i = 0; i < cards.length; i++) {
@@ -851,8 +860,9 @@
       title.style.textAlign = "center";
       zone.append(title);
 
-      var cardX = Math.round((zoneW - cw) / 2);
-      var top = SHARED_TITLE_H + SHARED_PAD;
+      var pad = ZONE_PAD - 2;
+      var cardX = Math.round(pad + Math.max(0, (zoneW - 2 * ZONE_PAD - cw) / 2));
+      var top = SHARED_TITLE_H + ZONE_PAD;
       for (var i = 0; i < this.shared.length; i++) {
         var index = this.shared[i];
         this.createCardFace(zone, {
@@ -911,7 +921,12 @@
     appendPickButton(zone, side, zoneW, zoneH) {
       var setup = this.setups[side];
       var active = this.canChoose();
-      var width = Math.min(Math.max(180, Math.round(zoneW - 56)), 340);
+      var border = this.picked === side ? 3 : 2;
+      var innerW = zoneW - 2 * border;
+      var innerH = zoneH - 2 * border;
+      var pad = ZONE_PAD - border;
+      var availW = zoneW - 2 * ZONE_PAD;
+      var width = Math.min(340, Math.max(180, availW), availW);
       var height = 42;
       var button = document.createElement("button");
       button.type = "button";
@@ -920,7 +935,8 @@
       button.disabled = !active;
       button.textContent = "Выбрать " +
         (COLOR_ACC[setup.color] || "выбранную") + " сторону";
-      setPos(button, (zoneW - width) / 2, zoneH - 12 - height, width, height);
+      setPos(button, Math.round((innerW - width) / 2),
+        innerH - pad - height, width, height);
       zone.append(button);
     }
 
