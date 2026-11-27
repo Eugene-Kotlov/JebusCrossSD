@@ -1,6 +1,7 @@
 /* Разбор, правка и сборка шаблона .h3t: TSV в кодировке windows-1251.
  * Первые три строки — заголовки секций, подсекций и полей.
- * Правка карты: {mode, path, value, target, find}, где path — «Секция\\Поле».
+ * Правка карты: {mode, path, value, target, find, occurrence}, где path —
+ * «Секция\\Поле». occurrence выбирает повторяющийся столбец (с 1).
  * Если у replace задан find, из ячейки вырезается этот фрагмент и вместо него
  * подставляется value; без find ячейка заменяется целиком.
  */
@@ -122,11 +123,16 @@
       if (TEMPLATE_MODES.indexOf(mode) === -1 || !section || !field) {
         return;
       }
+      var occurrence = parseInt(item.occurrence, 10);
+      if (!Number.isFinite(occurrence) || occurrence < 1) {
+        occurrence = 1;
+      }
       out.push({
         mode: mode,
         path: templatePath(section, subsection, field).slice(0, 160),
         value: String(item.value === undefined || item.value === null ? "" : item.value),
         find: String(item.find === undefined || item.find === null ? "" : item.find),
+        occurrence: occurrence,
         target: String(item.target || "").trim().slice(0, 40)
       });
     });
@@ -223,9 +229,9 @@
     return columns;
   }
 
-  function h3tCell(rows, section, subsection, field, target) {
+  function h3tCell(rows, section, subsection, field, target, occurrence) {
     var columns = h3tColumns(rows);
-    var colIdx = null;
+    var matches = [];
     for (var i = 0; i < columns.length; i++) {
       var col = columns[i];
       if (
@@ -233,15 +239,25 @@
         col.field.toLowerCase() === String(field).toLowerCase() &&
         (!subsection || col.subsection.toLowerCase() === String(subsection).toLowerCase())
       ) {
-        colIdx = col.index;
-        break;
+        matches.push(col.index);
       }
     }
-    if (colIdx === null) {
+    if (!matches.length) {
       throw new Error(
         "Столбец " + section + " -> " + subsection + " -> " + field + " не найден"
       );
     }
+    var nth = parseInt(occurrence, 10);
+    if (!Number.isFinite(nth) || nth < 1) {
+      nth = 1;
+    }
+    if (nth > matches.length) {
+      throw new Error(
+        "Столбец " + section + " -> " + subsection + " -> " + field +
+        " встречается " + matches.length + " раз(а), запрошено вхождение " + nth
+      );
+    }
+    var colIdx = matches[nth - 1];
 
     var rowIdx = null;
     var low = String(section).toLowerCase();
@@ -299,13 +315,13 @@
     return [rowIdx, colIdx];
   }
 
-  function readH3tRecord(rows, section, subsection, field, target) {
-    var cell = h3tCell(rows, section, subsection, field, target);
+  function readH3tRecord(rows, section, subsection, field, target, occurrence) {
+    var cell = h3tCell(rows, section, subsection, field, target, occurrence);
     return rows[cell[0]][cell[1]];
   }
 
-  function changeRecord(rows, section, subsection, field, newValue, target) {
-    var cell = h3tCell(rows, section, subsection, field, target);
+  function changeRecord(rows, section, subsection, field, newValue, target, occurrence) {
+    var cell = h3tCell(rows, section, subsection, field, target, occurrence);
     var oldValue = rows[cell[0]][cell[1]];
     rows[cell[0]][cell[1]] = String(newValue);
     return oldValue;
@@ -325,25 +341,29 @@
       var target = String(instr.target || "") || null;
       var value = String(instr.value === undefined || instr.value === null ? "" : instr.value);
       var find = String(instr.find === undefined || instr.find === null ? "" : instr.find);
+      var occurrence = parseInt(instr.occurrence, 10);
+      if (!Number.isFinite(occurrence) || occurrence < 1) {
+        occurrence = 1;
+      }
       var oldValue;
       var found = null;
       if (mode === APPEND) {
-        var oldText = readH3tRecord(rows, section, subsection, field, target);
+        var oldText = readH3tRecord(rows, section, subsection, field, target, occurrence);
         if (String(oldText).trim()) {
           value = (String(oldText).trim() + " " + value.trim()).trim();
         }
-        oldValue = changeRecord(rows, section, subsection, field, value, target);
+        oldValue = changeRecord(rows, section, subsection, field, value, target, occurrence);
       } else if (find) {
-        oldValue = readH3tRecord(rows, section, subsection, field, target);
+        oldValue = readH3tRecord(rows, section, subsection, field, target, occurrence);
         found = String(oldValue).indexOf(find) !== -1;
         if (found) {
           value = String(oldValue).split(find).join(value);
-          changeRecord(rows, section, subsection, field, value, target);
+          changeRecord(rows, section, subsection, field, value, target, occurrence);
         } else {
           value = oldValue;
         }
       } else {
-        oldValue = changeRecord(rows, section, subsection, field, value, target);
+        oldValue = changeRecord(rows, section, subsection, field, value, target, occurrence);
       }
       var item = {
         path: templatePath(section, subsection, field),
@@ -351,6 +371,9 @@
         old: oldValue,
         new: value
       };
+      if (occurrence > 1) {
+        item.occurrence = occurrence;
+      }
       if (found !== null) {
         item.find = find;
         item.found = found;
