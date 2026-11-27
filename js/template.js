@@ -1,6 +1,8 @@
 /* Разбор, правка и сборка шаблона .h3t: TSV в кодировке windows-1251.
  * Первые три строки — заголовки секций, подсекций и полей.
- * Правка карты: {mode, path, value, target}, где path — «Секция\\Поле».
+ * Правка карты: {mode, path, value, target, find}, где path — «Секция\\Поле».
+ * Если у replace задан find, из ячейки вырезается этот фрагмент и вместо него
+ * подставляется value; без find ячейка заменяется целиком.
  */
 (function (global) {
   "use strict";
@@ -124,6 +126,7 @@
         mode: mode,
         path: templatePath(section, subsection, field).slice(0, 160),
         value: String(item.value === undefined || item.value === null ? "" : item.value),
+        find: String(item.find === undefined || item.find === null ? "" : item.find),
         target: String(item.target || "").trim().slice(0, 40)
       });
     });
@@ -321,19 +324,38 @@
       var field = parts[2];
       var target = String(instr.target || "") || null;
       var value = String(instr.value === undefined || instr.value === null ? "" : instr.value);
+      var find = String(instr.find === undefined || instr.find === null ? "" : instr.find);
+      var oldValue;
+      var found = null;
       if (mode === APPEND) {
         var oldText = readH3tRecord(rows, section, subsection, field, target);
         if (String(oldText).trim()) {
           value = (String(oldText).trim() + " " + value.trim()).trim();
         }
+        oldValue = changeRecord(rows, section, subsection, field, value, target);
+      } else if (find) {
+        oldValue = readH3tRecord(rows, section, subsection, field, target);
+        found = String(oldValue).indexOf(find) !== -1;
+        if (found) {
+          value = String(oldValue).split(find).join(value);
+          changeRecord(rows, section, subsection, field, value, target);
+        } else {
+          value = oldValue;
+        }
+      } else {
+        oldValue = changeRecord(rows, section, subsection, field, value, target);
       }
-      var oldValue = changeRecord(rows, section, subsection, field, value, target);
-      applied.push({
+      var item = {
         path: templatePath(section, subsection, field),
         target: target,
         old: oldValue,
         new: value
-      });
+      };
+      if (found !== null) {
+        item.find = find;
+        item.found = found;
+      }
+      applied.push(item);
     });
     return applied;
   }

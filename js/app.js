@@ -2052,7 +2052,8 @@
         }
         if (result.applied.length) {
           var changes = result.applied.map(function (item) {
-            return item.path + (item.target ? " #" + item.target : "");
+            return item.path + (item.target ? " #" + item.target : "") +
+              (item.found === false ? " (не найдено)" : "");
           }).join("; ");
           this.log("Шаблон сохранён: " + result.filename +
             " (правки: " + changes + ").");
