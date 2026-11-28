@@ -113,7 +113,14 @@ body {
 }
 
 .zone.chosen .zone-title {
+  left: 7px;
+  top: 7px;
   color: var(--gold);
+}
+
+.zone.chosen .gold-panel {
+  top: 7px;
+  right: 7px;
 }
 
 .zone-shared {
@@ -126,8 +133,8 @@ body {
 
 .zone-title {
   position: absolute;
-  left: 12px;
-  top: 9px;
+  left: 8px;
+  top: 8px;
   font-size: 14px;
   font-weight: 700;
   letter-spacing: 0.5px;
@@ -139,13 +146,13 @@ body {
 /* ЗОЛОТО */
 .gold-panel {
   position: absolute;
-  top: 2px;
+  top: 8px;
   right: 8px;
   z-index: 4;
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 3px 6px 3px 10px;
+  gap: 4px;
+  padding: 3px 4px 3px 6px;
   background: #1e1208;
   border: 2px solid #a8804a;
   border-radius: 10px;
@@ -155,7 +162,7 @@ body {
   display: flex;
   flex-direction: column;
   line-height: 1.05;
-  min-width: 42px;
+  min-width: 40px;
 }
 
 .gold-label {
@@ -202,6 +209,13 @@ body {
   color: #8d744f;
   border-color: #5a3a19;
   cursor: default;
+}
+
+.gold-panel .gold-input {
+  width: 90px;
+  padding: 2px;
+  font-size: 24px;
+  line-height: 1.1;
 }
 
 /* БАННЕР ГОРОДА */
