@@ -2,6 +2,9 @@
  * Первые три строки — заголовки секций, подсекций и полей.
  * Правка карты: {mode, path, value, target, find, occurrence}, где path —
  * «Секция\\Поле». occurrence выбирает повторяющийся столбец (с 1).
+ * target: "$zone" — зона игрока, "$opposite_zone" — зона соперника,
+ * "$zone_connection" — коннектор «1-{зона игрока}»,
+ * "$opposite_zone_connection" — коннектор «1-{зона соперника}».
  * Если у replace задан find, из ячейки вырезается этот фрагмент и вместо него
  * подставляется value; без find ячейка заменяется целиком.
  */
@@ -15,6 +18,8 @@
   var TEMPLATE_PATH_SEP = "\\";
   var SELF_ZONE = "$zone";
   var OPP_ZONE = "$opposite_zone";
+  var SELF_ZONE_CONNECTION = "$zone_connection";
+  var OPP_ZONE_CONNECTION = "$opposite_zone_connection";
   var ZONE_TEMPLATE_IDS = { left: "2", right: "3" };
 
   // КОДИРОВКА windows-1251
@@ -425,21 +430,31 @@
     var rows = parseH3t(sourceText);
     var zoneIds = cardZoneIds(cards, zones);
     var instructions = [];
+    var zoneTargets = [SELF_ZONE, OPP_ZONE, SELF_ZONE_CONNECTION, OPP_ZONE_CONNECTION];
+
+    function resolveZoneTarget(target, zoneId) {
+      if (target === SELF_ZONE) {
+        return zoneId;
+      }
+      if (target === OPP_ZONE) {
+        return String(5 - parseInt(zoneId, 10));
+      }
+      // Коннектор с центральной зоной 1: «1-2» для левой, «1-3» для правой.
+      if (target === SELF_ZONE_CONNECTION) {
+        return "1-" + zoneId;
+      }
+      return "1-" + String(5 - parseInt(zoneId, 10));
+    }
+
     cards.forEach(function (card, idx) {
+      var ownZone = zoneIds.get(idx);
       normalizeTemplate(card.template).forEach(function (raw) {
         var instr = Object.assign({}, raw);
-        if (instr.target === SELF_ZONE) {
-          var target = zoneIds.get(idx);
-          if (!target) {
+        if (zoneTargets.indexOf(instr.target) !== -1) {
+          if (!ownZone) {
             return;
           }
-          instr.target = target;
-        } else if (instr.target === OPP_ZONE) {
-          var ownTarget = zoneIds.get(idx);
-          if (!ownTarget) {
-            return;
-          }
-          instr.target = String(5 - parseInt(ownTarget, 10));
+          instr.target = resolveZoneTarget(instr.target, ownZone);
         }
         instructions.push(instr);
       });
@@ -462,6 +477,8 @@
     REPLACE: REPLACE,
     SELF_ZONE: SELF_ZONE,
     OPP_ZONE: OPP_ZONE,
+    SELF_ZONE_CONNECTION: SELF_ZONE_CONNECTION,
+    OPP_ZONE_CONNECTION: OPP_ZONE_CONNECTION,
     templatePath: templatePath,
     splitTemplatePath: splitTemplatePath,
     normalizeTemplate: normalizeTemplate,
