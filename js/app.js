@@ -42,7 +42,6 @@
   var COLOR_ACC = { "Красный": "красную", "Синий": "синюю" };
 
   var SHARED_TITLE_H = 30;
-  var SHARED_PAD = 8;
   var SHARED_GAP = 20;
   var PICK_SPACE = 62;
   var ZONE_RADIUS = 14;
